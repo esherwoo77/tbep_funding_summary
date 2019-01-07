@@ -33,18 +33,17 @@ tbsum$Group <- factor(tbsum$Group, levels = c("Non-Profit Match", "Private Cash"
                                               "State Cash", "State Match", 
                                               "Federal Cash", "Federal Match", "Federal CWA320"))
 
-tbsum$Group
-
-tbsum
-
-pie(tbsum$sum_funds,labels = tbsum$Group, clockwise = TRUE, main = "Current & Past 2 Fiscal Years")
-
 cols <- c("#a5a5a5", "#ed7d31", "#f3a977", 
           "#ffc000", "#ffd34d", 
           "#70ad47", "#98c879", 
           "#4472c4", "#7e9ed6", 
           "#c00000", "#ff0e0e", 
           "#bc8fdd", "#dfcaef", "#7030a0")
+
+tbsum
+
+pie(tbsum$sum_funds,labels = tbsum$Group, clockwise = TRUE, main = "Current & Past 2 Fiscal Years")
+
 
 pc <- ggplot(tbsum, aes(x=1, y = sum_funds, fill=Group)) +
   geom_bar(width = 1, size = 1, color = "white", stat = "identity") + 
