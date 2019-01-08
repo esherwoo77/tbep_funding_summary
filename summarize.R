@@ -24,7 +24,13 @@ tbsum <- funding %>%
   mutate(Group = factor(Source_Type),
          cumulative = cumsum(sum_funds),
          midpoint = cumulative - sum_funds /2,
-         label = paste0(round(sum_funds / sum(sum_funds)*100, 1), "%"))
+         label = paste0(round(sum_funds / sum(sum_funds)*100, 1), "%"),
+         cols = c("#ffc000", "#ffd34d", 
+                  "#70ad47", "#98c879",
+                  "#bc8fdd", "#7030a0", "#dfcaef", 
+                  "#a5a5a5", "#ed7d31", "#f3a977",
+                  "#4472c4", "#7e9ed6", 
+                  "#c00000", "#ff0e0e"))
 
 tbsum$Group <- factor(tbsum$Group, levels = c("Non-Profit Match", "Private Cash", "Private Match", 
                                               "City Cash", "City Match",
@@ -33,7 +39,7 @@ tbsum$Group <- factor(tbsum$Group, levels = c("Non-Profit Match", "Private Cash"
                                               "State Cash", "State Match", 
                                               "Federal Cash", "Federal Match", "Federal CWA320"))
 
-cols <- c("#a5a5a5", "#ed7d31", "#f3a977", 
+or_cols <- c("#a5a5a5", "#ed7d31", "#f3a977", 
           "#ffc000", "#ffd34d", 
           "#70ad47", "#98c879", 
           "#4472c4", "#7e9ed6", 
@@ -42,14 +48,17 @@ cols <- c("#a5a5a5", "#ed7d31", "#f3a977",
 
 tbsum
 
-pie(tbsum$sum_funds,labels = tbsum$Group, clockwise = TRUE, main = "Current & Past 2 Fiscal Years")
-
+pie(tbsum$sum_funds,labels = paste(tbsum$label,"\n","($",tbsum$sum_funds,")"), 
+    clockwise = TRUE, col = tbsum$cols, 
+    main = "Current & Past 2 Fiscal Years", cex=0.5, radius = 0.9)
+legend(1.1, 1, tbsum$Group, cex=0.5, fill=tbsum$cols)
 
 pc <- ggplot(tbsum, aes(x=1, y = sum_funds, fill=Group)) +
   geom_bar(width = 1, size = 1, color = "white", stat = "identity") + 
   coord_polar(theta = "y") +
-  scale_fill_manual(values = cols) +
-  geom_text(aes(label = label), position = position_stack(vjust = 0.5))+
+  scale_fill_manual(values = or_cols) +
+  geom_text(aes(label = paste(tbsum$label,"\n","($",tbsum$sum_funds,")")), 
+            position = position_stack(vjust = 0.5)) +
   labs(x = NULL, y = NULL, fill = NULL, 
        title = "Current & Past 2 Fiscal Years") +
   theme_classic() +
@@ -70,9 +79,10 @@ rlabel = 0.95
 pc2 <- ggplot(tbsum2) +
          geom_arc_bar(aes(x0 = 0, y0 = 0, r0 = 0, r = 1,
                           start = start, end = end, fill = Group)) +
-         geom_text(aes(x = rlabel * sin(middle), y = rlabel * cos(middle), label = label,
+         geom_text(aes(x = rlabel * sin(middle), y = rlabel * cos(middle), 
+                       label = paste(tbsum$label,"\n","($",tbsum$sum_funds,")"),
                        hjust = 0.5, vjust = 0.5)) +
-         scale_fill_manual(values = cols) +
+         scale_fill_manual(values = or_cols) +
          coord_fixed() +
   labs(x = NULL, y = NULL, fill = NULL, 
        title = "Current & Past 2 Fiscal Years") +
