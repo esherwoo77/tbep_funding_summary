@@ -5,6 +5,7 @@ library(ggmap)
 library(googlesheets)
 library(dplyr)
 library(ggforce)
+library(plotly)
 
 #funding <- read_excel("data/TBEP_Funding_Sources_2016-2018.xlsx")
 funding <- gs_title('TBEP_Leveraging_Data') %>% 
@@ -96,3 +97,26 @@ pc2 <- ggplot(tbsum2) +
                             name = "", breaks = NULL, labels = NULL)  
 
 pc2
+customOrder <- c("Non-Profit Match", "Private Cash", "Private Match", 
+                  "City Cash", "City Match",
+                  "County Cash", "County Match",
+                  "Regional Cash", "Regional Match",
+                  "State Cash", "State Match", 
+                  "Federal Cash", "Federal Match", "Federal CWA320") 
+customOrder <- c(customOrder[1],rev(customOrder[2:length(customOrder)]))
+or_cols2 <- c(or_cols[1],rev(or_cols[2:length(or_cols)]))
+tbsum3 <- tbsum %>% slice(match(customOrder, tbsum$Source_Type))
+tbsum3$Source_Type <- factor(tbsum3$Source_Type, levels = tbsum3[["Source_Type"]])
+
+pc3 <- plot_ly(tbsum3, labels= ~Source_Type, 
+               values= ~sum_funds, sort = FALSE) %>% 
+               add_pie(textposition = 'inside', 
+                       textinfo = 'label+percent', 
+                       insidetextfont = list(color = '#FFFFFF'),
+                       marker = list(colors = ~cols,
+                                     line = list(color = '#FFFFFF', width = 1))) %>% 
+               #The 'pull' attribute can also be used to create space between the sectors
+        layout(title = 'Current & Past 2 Fiscal Years', showlegend = FALSE,
+               xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+               yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+pc3
