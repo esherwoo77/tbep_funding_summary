@@ -11,8 +11,8 @@ library(plotly)
 funding <- gs_title('TBEP_Leveraging_Data') %>% 
            gs_read(ws='data')
 
-#Renaming all In-Kind, Match Contributions to just Match
-funding$Type[funding$Type=="In-Kind"] <- "Match"
+#Renaming all In-Kind, Leveraged, Match Contributions to just Match
+funding$Type[funding$Type %in% c("In-Kind", "Leveraged")] <- "Match"
 
 funding$Source_Type <- paste(funding$Source, funding$Type)
 
@@ -48,11 +48,6 @@ or_cols <- c("#a5a5a5", "#ed7d31", "#f3a977",
           "#bc8fdd", "#dfcaef", "#7030a0")
 
 tbsum
-
-pie(tbsum$sum_funds,labels = paste(tbsum$label,"\n","($",tbsum$sum_funds,")"), 
-    clockwise = TRUE, col = tbsum$cols, 
-    main = "Current & Past 2 Fiscal Years", cex=0.5, radius = 0.9)
-legend(1.1, 1, tbsum$Group, cex=0.5, fill=tbsum$cols)
 
 pc <- ggplot(tbsum, aes(x=1, y = sum_funds, fill=Group)) +
   geom_bar(width = 1, size = 1, color = "white", stat = "identity") + 
@@ -108,6 +103,12 @@ or_cols2 <- c(or_cols[1],rev(or_cols[2:length(or_cols)]))
 tbsum3 <- tbsum %>% slice(match(customOrder, tbsum$Source_Type))
 tbsum3$Source_Type <- factor(tbsum3$Source_Type, levels = tbsum3[["Source_Type"]])
 
+pie(tbsum3$sum_funds,labels = paste(tbsum3$label,"\n","($",tbsum3$sum_funds,")"), 
+    clockwise = TRUE, col = tbsum3$cols, 
+    main = "Current & Past 2 Fiscal Years", cex=0.5, radius = 0.9)
+legend(1.1, 1, tbsum3$Group, cex=0.4, fill=tbsum3$cols)
+
+
 pc3 <- plot_ly(tbsum3, labels= ~Source_Type, 
                values= ~sum_funds, sort = FALSE) %>% 
                add_pie(textposition = 'inside', 
@@ -120,3 +121,4 @@ pc3 <- plot_ly(tbsum3, labels= ~Source_Type,
                xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
                yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 pc3
+
