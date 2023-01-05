@@ -54,6 +54,8 @@ tbsum <- funding %>%
 
 write_excel_csv(tbsum,"./data/TBEP_Funding_Sources_2021-2023.csv")
 
+#Attempt to automate pie charts below ...
+
 wpsum <- funding %>% 
   group_by(Funding_Entity) %>% 
   filter(Year %in% years, (Type == "Cash" | Type == "CWA320")) %>% 
